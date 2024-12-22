@@ -164,17 +164,17 @@ fi
 echo -e "$(date +"%Y/%m/%d %T") ${C3}Generating tar.gz file"${C0}
 FILENAME="${BACKUP_NAME}-$(date +%FT%H%M).tar.gz"
 # generate a temporary file to store EXCLUDES in
-EXCLUEDS_FILE=$(mktemp /tmp/backup.XXXXXX.txt) 
-if [ ! ${#EXCLUDES[@]} -eq 0 ]; then printf "%s\n" "${EXCLUDES[@]}" > "$EXCLUEDS_FILE"; fi
+EXCLUDES_FILE=$(mktemp /tmp/backup.XXXXXX.txt)
+if [ ! ${#EXCLUDES[@]} -eq 0 ]; then printf "%s\n" "${EXCLUDES[@]}" > "$EXCLUDES_FILE"; fi
 
 # run tar with or without '-v', according to VERBOSE value
 VERBOSE_FLAG="";
 if [ "$VERBOSE" = true ]; then VERBOSE_FLAG="-v";
 
-tar -cz VERBOSE_FLAG -f "$SAVE_FOLDER/$FILENAME" -C "$BACKUP_FOLDER/.." -X $EXCLUEDS_FILE "$(basename "$BACKUP_FOLDER")";
+tar -cz VERBOSE_FLAG -f "$SAVE_FOLDER/$FILENAME" -C "$BACKUP_FOLDER/.." -X $EXCLUDES_FILE "$(basename "$BACKUP_FOLDER")";
 
 # remove temporary file
-rm $EXCLUEDS_FILE
+rm $EXCLUDES_FILE
 
 # tar commmand finished successfully (exit code = 0)
 if [ "$?" = 0 ]; then
