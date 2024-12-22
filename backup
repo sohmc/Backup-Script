@@ -13,10 +13,13 @@
 ##  - In order to use the upload feature, rclone must be installed and have at least one cloud service setup in config.
 ## ------------------------------------
 ##
-##  Usage: backup [-n <name>] [-s <path>] [-e <pattern>]... [-u <path>] [-p <API key>] [-r] [-y] [-v] <path-to-backup>
+##  Usage: backup [-n <format>] [-n <format>] [-l <number>] [-s <path>] [-e <pattern>]... [-u <path>] [-p <API key>] [-r] [-y] [-v] <path-to-backup>
 ##
 ##  Options:
 ##    -n <name>     Sets the tar.gz file name [default: "backup"]
+##    -d <format>   Sets date command format [default: "%Y/%m/%d %T" ie: "2024-03-05 07:01:53"]
+##    -l <number>   Incremental backup mode: Adds 'level<number>' to the filename.
+##                  If the number is greater than 0, an incremental backup is performed.
 ##    -s <path>     Path to which the generated backup file will be saved to [default: current working directory]
 ##    -e <pattern>  Exclude a pattern (specific files / folders) from being backed up
 ##    -u <path>     rclone path to which the backup file will be uploaded to (not providing one will skip the upload process)
@@ -44,6 +47,8 @@ REMOVE_LOCAL=false # Boolean - Remove local backup file after upload.
 SKIP_WARNINGS=false # Boolean - Skip warnings.
 VERBOSE=false # Boolean - Use verbose mode when running tar and rclone.
 PUSHBULLET_TITLE="Backup Script" # Pusbullet - Notification title.
+DATE_FORMAT='%Y%m%d-%H%M%S'
+INCREMENTAL_LEVEL=0
 PUSHBULLET_MESSAGE_START="Backup script " # Pushbullet - Notification messages will start with this string, followed by one of the followings:
 PUSHBULLET_MESSAGE_FINISHED_SUCCESS="finished successfully." # Pusbullet - Message will be shown if the script ran successfully.
 PUSHBULLET_MESSAGE_FINISHED_ERRORS="finished with errors." # Pusbullet - Message will be shown if the script finished with errors.
@@ -69,6 +74,12 @@ while getopts ":n:e:s:u:p:ryvh" arg; do
   case $arg in
     n)
       BACKUP_NAME=${OPTARG}
+      ;;
+    d)
+      DATE_FORMAT=${OPTARG}
+      ;;
+    l)
+      INCREMENTAL_LEVELq=${OPTARG}
       ;;
     e)
       EXCLUDES+=("${OPTARG}")
