@@ -168,8 +168,10 @@ EXCLUEDS_FILE=$(mktemp /tmp/backup.XXXXXX.txt)
 if [ ! ${#EXCLUDES[@]} -eq 0 ]; then printf "%s\n" "${EXCLUDES[@]}" > "$EXCLUEDS_FILE"; fi
 
 # run tar with or without '-v', according to VERBOSE value
-if [ "$VERBOSE" = true ]; then tar -cvzf "$SAVE_FOLDER/$FILENAME" -C "$BACKUP_FOLDER/.." -X $EXCLUEDS_FILE "$(basename "$BACKUP_FOLDER")"; \
-else tar -czf "$SAVE_FOLDER/$FILENAME" -C "$BACKUP_FOLDER/.." -X $EXCLUEDS_FILE "$(basename "$BACKUP_FOLDER")"; fi
+VERBOSE_FLAG="";
+if [ "$VERBOSE" = true ]; then VERBOSE_FLAG="-v";
+
+tar -cz VERBOSE_FLAG -f "$SAVE_FOLDER/$FILENAME" -C "$BACKUP_FOLDER/.." -X $EXCLUEDS_FILE "$(basename "$BACKUP_FOLDER")";
 
 # remove temporary file
 rm $EXCLUEDS_FILE
@@ -190,7 +192,7 @@ fi
 if [ -n "$RCLONE_FOLDER" ]; then
   echo -e "$(date +"%Y/%m/%d %T") ${C3}Uploading backup file to ${C4}$RCLONE_FOLDER${C0}"
   # run rclone with or without '-v', according to VERBOSE value
-  if [ "$VERBOSE" = true ]; then rclone copy "$SAVE_FOLDER/$FILENAME" -v "$RCLONE_FOLDER"; else rclone copy "$SAVE_FOLDER/$FILENAME" "$RCLONE_FOLDER"; fi
+  rclone copy "$SAVE_FOLDER/$FILENAME" $VERBOSE_FLAG "$RCLONE_FOLDER"
   # rclone commmand finished successfully (exit code = 0)
   if [ "$?" = 0 ]; then
     echo -e "$(date +"%Y/%m/%d %T") ${C1}Backup file uploaded successfully${C0}"
