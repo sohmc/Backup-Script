@@ -70,7 +70,7 @@ C2='\033[1;31m' # ANSI - error - red
 C3='\033[0;36m' # ANSI - information - cyan
 C4='\033[0;33m' # ANSI - variables/paths - orange
 
-while getopts ":n:e:s:u:p:ryvh" arg; do
+while getopts ":n:d:l:e:s:u:p:ryvh" arg; do
   case $arg in
     n)
       BACKUP_NAME=${OPTARG}
@@ -167,23 +167,30 @@ if [ "$REMOVE_LOCAL" = true ] && [ -z "$RCLONE_FOLDER" ] && [] "$SKIP_WARNINGS" 
 fi
 
 # Create Kebabed folder name so that we can use it as a file name
-KEBAB-BACKUP_FOLDER=${BACKUP_FOLDER//\//-};
+KEBAB_BACKUP_FOLDER=${BACKUP_FOLDER//\//-}
 # Remove dashes or dots if they are in the front of the kebab
-KEBAB_BACKUP_FOLDER=${KEBAB_BACKUP_FOLDER##+([-.])};
-
+shopt -s extglob
+KEBAB_BACKUP_FOLDER="${KEBAB_BACKUP_FOLDER##+([.-])}"
+shopt -u extglob
 # if INCREMENTAL_LEVEL is GTE 0, enable incremental label
-INCREMENTAL_LABEL="";
-INCREMENTAL_FLAG="";
-if [ ${INCREMENTAL_LEVEL} >= 0 ]; then
-  SNAR_FILE=$HOME/.cache/tar/${KEBAB_BACKUP_FOLDER}.snar
-  INCREMENTAL_LABEL="-level${INCREMENTAL_LEVEL}";
-  INCREMENTAL_FLAG="--listed-incremental ${SNAR_FILE}";
+INCREMENTAL_LABEL=""
+INCREMENTAL_FLAG=""
+if [ ${INCREMENTAL_LEVEL} -ge 0 ]; then
+  echo $KEBAB_BACKUP_FOLDER
+  SNAR_FILE=$HOME/.cache/tar/$KEBAB_BACKUP_FOLDER.snar
+  INCREMENTAL_LABEL="-level${INCREMENTAL_LEVEL}"
+  INCREMENTAL_FLAG="--listed-incremental=${SNAR_FILE}"
+
+  if [ ! -d $HOME/.config/tar ]; then 
+    echo -e "$(date +"%Y/%m/%d %T") ${C3}Creating ${4}$HOME/.config/tar ${C3} directory"${C0}
+    mkdir -p $HOME/.config/tar
+  fi
 fi
 
 # ----- tar -----
 echo -e "$(date +"%Y/%m/%d %T") ${C3}Generating tar.gz file"${C0}
 FILENAME="${BACKUP_NAME}-$(date +${DATE_FORMAT})${INCREMENTAL_LABEL}.tar.gz"
-echo -e "$(date +"%Y/%m/%d %T") ${C3}tar FILENAME: ${FILENAME}"${C0}
+echo -e "$(date +"%Y/%m/%d %T") ${C3}tar FILENAME: ${C4}${FILENAME}"${C0}
 # generate a temporary file to store EXCLUDES in
 EXCLUDES_FILE=$(mktemp /tmp/backup.XXXXXX.txt)
 if [ ! ${#EXCLUDES[@]} -eq 0 ]; then printf "%s\n" "${EXCLUDES[@]}" > "$EXCLUDES_FILE"; fi
@@ -191,7 +198,7 @@ if [ ! ${#EXCLUDES[@]} -eq 0 ]; then printf "%s\n" "${EXCLUDES[@]}" > "$EXCLUDES
 # Include default.exclude if it exists
 if [ -f $HOME/.config/tar/default.exclude ]; then 
   echo -e "$(date +"%Y/%m/%d %T") ${C3} Default exclude file found.  Adding to excludes..."${C0}
-  cat $HOME/.config/tar/default.exclude >> "$EXCLUDES_FILE"; 
+  cat $HOME/.config/tar/default.exclude >> "$EXCLUDES_FILE";
 fi
 # Include a {kebabbed}.exclude if it exists
 if [ -f $HOME/.config/tar/$KEBAB_BACKUP_FOLDER.exclude ]; then 
@@ -202,7 +209,7 @@ fi
 
 # run tar with or without '-v', according to VERBOSE value
 VERBOSE_FLAG="";
-if [ "$VERBOSE" = true ]; then VERBOSE_FLAG="-v";
+if [ "$VERBOSE" = true ]; then VERBOSE_FLAG="-v"; fi
 
 tar -cz $VERBOSE_FLAG -f "$SAVE_FOLDER/$FILENAME" $INCREMENTAL_FLAG -C "$BACKUP_FOLDER/.." -X $EXCLUDES_FILE "$(basename "$BACKUP_FOLDER")";
 
