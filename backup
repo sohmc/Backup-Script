@@ -184,9 +184,9 @@ if [ ${INCREMENTAL_LEVEL} -ge 0 ]; then
   INCREMENTAL_LABEL="-level${INCREMENTAL_LEVEL}"
   INCREMENTAL_FLAG="--listed-incremental=${SNAR_FILE}"
 
-  if [ ! -d $HOME/.config/tar ]; then 
-    echo -e "$(date +"%Y/%m/%d %T") ${C3}Creating ${4}$HOME/.config/tar ${C3} directory"${C0}
-    mkdir -p $HOME/.config/tar
+  if [ ! -d $HOME/.cache/tar ]; then 
+    echo -e "$(date +"%Y/%m/%d %T") ${C3}Creating ${4}$HOME/.cache/tar ${C3} directory"${C0}
+    mkdir -p $HOME/.cache/tar
   fi
 
   if [ ${INCREMENTAL_LEVEL} -eq 0 ] && [ -f $SNAR_FILE ]; then

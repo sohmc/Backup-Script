@@ -23,7 +23,7 @@ Latest version: 1.3.0 ([changelog](https://github.com/MichaelYochpaz/Backup-Scri
 Configuration can be set on the script file under the "Configuration" section,  
 or using command-line arguments (will override configuration that's set on on the script).
 ```
- Usage: backup [-n <name>] [-s <path>] [-e <pattern>]... [-u <path>] [-r] [-v] <path-to-backup>
+ Usage: backup [-n <name>] [-d <format>] [-l <number>] [-s <path>] [-e <pattern>]... [-u <path>] [-p <API key>] [-r] [-y] [-v] <path-to-backup>
 
  Options:
    -n <name>     Sets the tar.gz file name [default: "backup"]
@@ -48,6 +48,7 @@ or using command-line arguments (will override configuration that's set on on th
  backup "/home/user/important_stuff"
  backup -u "GDrive:/Backups" -r -y -p "XXXXXXXXXXXXXXXX" "/home/user/important_stuff/" 
  backup -n "important-stuff-backup" -s "/home/user/backups" -e "*.pdf" -e "important_stuff/dont_backup_this_folder" "/home/user/important_stuff/"
+ backup -l 0 -s /mnt/backup /home/michael
 ```
 
 ## FAQ
