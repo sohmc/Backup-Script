@@ -185,6 +185,11 @@ if [ ${INCREMENTAL_LEVEL} -ge 0 ]; then
     echo -e "$(date +"%Y/%m/%d %T") ${C3}Creating ${4}$HOME/.config/tar ${C3} directory"${C0}
     mkdir -p $HOME/.config/tar
   fi
+
+  if [ ${INCREMENTAL_LEVEL} -eq 0 ] && [ -f $SNAR_FILE ]; then
+    echo -e "$(date +"%Y/%m/%d %T") ${C3}Incremental Level set to 0 and snar file ${4}${SNAR_FILE} ${C3} exists.  Deleting..."${C0}
+    rm $SNAR_FILE
+  fi
 fi
 
 # ----- tar -----
