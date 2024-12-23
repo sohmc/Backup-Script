@@ -184,9 +184,10 @@ if [ ${INCREMENTAL_LEVEL} -ge 0 ]; then
   INCREMENTAL_LABEL="-level${INCREMENTAL_LEVEL}"
   INCREMENTAL_FLAG="--listed-incremental=${SNAR_FILE}"
 
-  if [ ! -d $HOME/.cache/tar ]; then 
-    echo -e "$(date +"%Y/%m/%d %T") ${C3}Creating ${C4}$HOME/.cache/tar ${C3} directory"${C0}
-    mkdir -p $HOME/.cache/tar
+  TAR_CACHE=$HOME/.cache/tar
+  if [ ! -d $ ]; then 
+    echo -e "$(date +"%Y/%m/%d %T") ${C3}Creating ${C4}$TAR_CACHE ${C3} directory"${C0}
+    mkdir -p $TAR_CACHE
   fi
 
   if [ ${INCREMENTAL_LEVEL} -eq 0 ] && [ -f $SNAR_FILE ]; then
@@ -204,14 +205,16 @@ EXCLUDES_FILE=$(mktemp /tmp/backup.XXXXXX.txt)
 if [ ! ${#EXCLUDES[@]} -eq 0 ]; then printf "%s\n" "${EXCLUDES[@]}" > "$EXCLUDES_FILE"; fi
 
 # Include default.exclude if it exists
-if [ -f $HOME/.config/tar/default.exclude ]; then 
+DEFAULT_EXCLUDE=$HOME/.config/tar/default.exclude 
+if [ -f $DEFAULT_EXCLUDE ]; then 
   echo -e "$(date +"%Y/%m/%d %T") ${C3} Default exclude file found.  Adding to excludes..."${C0}
-  cat $HOME/.config/tar/default.exclude >> "$EXCLUDES_FILE";
+  cat $DEFAULT_EXCLUDE >> "$EXCLUDES_FILE";
 fi
 # Include a {kebabbed}.exclude if it exists
-if [ -f $HOME/.config/tar/$KEBAB_BACKUP_FOLDER.exclude ]; then 
+KEBAB_BACKUP_FOLDER_EXCLUDE=$HOME/.config/tar/$KEBAB_BACKUP_FOLDER.exclude
+if [ -f $KEBAB_BACKUP_FOLDER_EXCLUDE ]; then 
   echo -e "$(date +"%Y/%m/%d %T") ${C3} Exclude file for ${KEBAB_BACKUP_FOLDER} found.  Adding to excludes..."${C0}
-  cat $HOME/.config/tar/$KEBAB_BACKUP_FOLDER.exclude >> "$EXCLUDES_FILE"; 
+  cat $KEBAB_BACKUP_FOLDER_EXCLUDE >> "$EXCLUDES_FILE"; 
 fi
 
 
