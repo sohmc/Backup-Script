@@ -13,13 +13,16 @@
 ##  - In order to use the upload feature, rclone must be installed and have at least one cloud service setup in config.
 ## ------------------------------------
 ##
-##  Usage: backup [-n <format>] [-n <format>] [-l <number>] [-s <path>] [-e <pattern>]... [-u <path>] [-p <API key>] [-r] [-y] [-v] <path-to-backup>
+##  Usage: backup [-n <name>] [-d <format>] [-l <number>] [-s <path>] [-e <pattern>]... [-u <path>] [-p <API key>] [-r] [-y] [-v] <path-to-backup>
 ##
 ##  Options:
 ##    -n <name>     Sets the tar.gz file name [default: "backup"]
 ##    -d <format>   Sets date command format [default: "%Y/%m/%d %T" ie: "2024-03-05 07:01:53"]
 ##    -l <number>   Incremental backup mode: Adds 'level<number>' to the filename.
 ##                  If the number is greater than 0, an incremental backup is performed.
+##                  Full backups are performed by default (and when a snar file does not exist), 
+##                  but indicating a level will create a snar file that will store data 
+##                  necessary to perform future backups.
 ##    -s <path>     Path to which the generated backup file will be saved to [default: current working directory]
 ##    -e <pattern>  Exclude a pattern (specific files / folders) from being backed up
 ##    -u <path>     rclone path to which the backup file will be uploaded to (not providing one will skip the upload process)
@@ -47,7 +50,7 @@ REMOVE_LOCAL=false # Boolean - Remove local backup file after upload.
 SKIP_WARNINGS=false # Boolean - Skip warnings.
 VERBOSE=false # Boolean - Use verbose mode when running tar and rclone.
 PUSHBULLET_TITLE="Backup Script" # Pusbullet - Notification title.
-DATE_FORMAT='%Y%m%d-%H%M%S'
+DATE_FORMAT='%Y/%m/%d %T'
 INCREMENTAL_LEVEL=-1
 PUSHBULLET_MESSAGE_START="Backup script " # Pushbullet - Notification messages will start with this string, followed by one of the followings:
 PUSHBULLET_MESSAGE_FINISHED_SUCCESS="finished successfully." # Pusbullet - Message will be shown if the script ran successfully.
@@ -55,7 +58,7 @@ PUSHBULLET_MESSAGE_FINISHED_ERRORS="finished with errors." # Pusbullet - Message
 PUSHBULLET_MESSAGE_FAIL="failed." # Pusbullet - Message will be shown if the script has failed.
 ## ------------------------------------
 
-usage() { echo "Usage: $(basename $0) [-n <name>] [-s <path>] [-e <pattern>]... [-u <path>] [-p <API key>] [-r] [-y] [-v] <path-to-backup>
+usage() { echo "Usage: $(basename $0) [-n <name>] [-d <format>] [-l <number>] [-s <path>] [-e <pattern>]... [-u <path>] [-p <API key>] [-r] [-y] [-v] <path-to-backup>
 Use $(basename $0) -h for additional info."; exit 1; }
 
 # if there is a Pushbullet API key, send a Pushbullet notification. uses a parameter for message's body
@@ -103,7 +106,7 @@ while getopts ":n:d:l:e:s:u:p:ryvh" arg; do
       VERBOSE=true
       ;;
     h)
-      echo " Usage: $(basename $0) [-n <name>] [-s <path>] [-e <pattern>]... [-u <path>] [-p <API key>] [-r] [-y] [-v] <path-to-backup>
+      echo " Usage: $(basename $0) [-n <name>] [-d <format>] [-l <number>] [-s <path>] [-e <pattern>]... [-u <path>] [-p <API key>] [-r] [-y] [-v] <path-to-backup>
  Options:
    -n <name>     Sets the tar.gz file name [default: "backup"]
    -d <format>   Sets date command format [default: "%Y/%m/%d %T" ie: "2024-03-05 07:01:53"]

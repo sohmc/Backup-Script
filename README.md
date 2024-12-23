@@ -5,7 +5,7 @@
 A Bash script to generate a tar.gz backup of a folder, with an option to automatically upload the backup file to a cloud service using [rclone](https://github.com/rclone/rclone).  
 List of cloud/storage providers currently supported by rclone can be found [here](https://github.com/rclone/rclone#storage-providers).
 <br>  
-Latest version: 1.2.0 ([changelog](https://github.com/MichaelYochpaz/Backup-Script/blob/master/changelog.md))
+Latest version: 1.3.0 ([changelog](https://github.com/MichaelYochpaz/Backup-Script/blob/master/changelog.md))
 
 ## Features
 * Generate a tar.gz backup file of a folder.
@@ -27,6 +27,12 @@ or using command-line arguments (will override configuration that's set on on th
 
  Options:
    -n <name>     Sets the tar.gz file name [default: "backup"]
+   -d <format>   Sets date command format [default: "%Y/%m/%d %T" ie: "2024-03-05 07:01:53"]
+   -l <number>   Incremental backup mode: Adds 'level<number>' to the filename.
+                 If the number is greater than 0, an incremental backup is performed.
+                 Full backups are performed by default (and when a snar file does not exist), 
+                 but indicating a level will create a snar file that will store data 
+                 necessary to perform future backups.
    -s <path>     Path to which the generated backup file will be saved to [default: current working directory]
    -e <pattern>  Exclude a pattern (specific files / folders) from being backed up
    -u <path>     rclone path to which the backup file will be uploaded to (not providing one will skip the upload process)
