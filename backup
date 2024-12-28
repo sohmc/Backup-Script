@@ -180,18 +180,26 @@ shopt -u extglob
 INCREMENTAL_LABEL=""
 INCREMENTAL_FLAG=""
 if [ ${INCREMENTAL_LEVEL} -ge 0 ]; then
-  SNAR_FILE=$HOME/.cache/tar/$KEBAB_BACKUP_FOLDER.snar
+  TAR_CACHE=$HOME/.cache/tar
+  SNAR_FILE=$TAR_CACHE/$KEBAB_BACKUP_FOLDER.snar
   INCREMENTAL_LABEL="-level${INCREMENTAL_LEVEL}"
   INCREMENTAL_FLAG="--listed-incremental=${SNAR_FILE}"
 
-  TAR_CACHE=$HOME/.cache/tar
-  if [ ! -d $ ]; then 
+  echo -e "$(date +"%Y/%m/%d %T") ${C3}Incremental level set to $INCREMENTAL_LEVEL"${C0}
+
+  if [ ! -d $TAR_CACHE ]; then 
     echo -e "$(date +"%Y/%m/%d %T") ${C3}Creating ${C4}$TAR_CACHE ${C3} directory"${C0}
     mkdir -p $TAR_CACHE
   fi
 
+  if [ -f $SNAR_FILE ]; 
+    then echo -e "$(date +"%Y/%m/%d %T") ${C3}snar file ${C4}$SNAR_FILE ${C3} found"${C0}
+  else 
+    echo -e "$(date +"%Y/%m/%d %T") ${C3}snar file ${C4}$SNAR_FILE ${C3} not found.  It will be created and a full backup will be performed."${C0}
+  fi
+
   if [ ${INCREMENTAL_LEVEL} -eq 0 ] && [ -f $SNAR_FILE ]; then
-    echo -e "$(date +"%Y/%m/%d %T") ${C3}Incremental Level set to 0 and snar file ${C4}${SNAR_FILE} ${C3} exists.  Deleting..."${C0}
+    echo -e "$(date +"%Y/%m/%d %T") ${C3}Incremental Level set to 0 and snar file exists.  Deleting..."${C0}
     rm $SNAR_FILE
   fi
 fi
