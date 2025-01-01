@@ -18,7 +18,7 @@
 ##
 ##  Options:
 ##    -n <name>     Sets the tar.gz file name [default: "backup"]
-##    -d <format>   Sets date command format [default: "%Y/%m/%d %T" ie: "2024-03-05 07:01:53"]
+##    -d <format>   Sets date command format [default: "%FT%H%M" ie: "2024-03-05T0701"]
 ##    -l <number>   Incremental backup mode: Adds 'level<number>' to the filename.
 ##                  If the number is greater than 0, an incremental backup is performed.
 ##                  Full backups are performed by default (and when a snar file does not exist), 
@@ -110,7 +110,7 @@ while getopts ":n:d:l:e:s:u:p:ryvh" arg; do
       echo " Usage: $(basename $0) [-n <name>] [-d <format>] [-l <number>] [-s <path>] [-e <pattern>]... [-u <path>] [-p <API key>] [-r] [-y] [-v] <path-to-backup>
  Options:
    -n <name>     Sets the tar.gz file name [default: "backup"]
-   -d <format>   Sets date command format [default: "%Y/%m/%d %T" ie: "2024-03-05 07:01:53"]
+   -d <format>   Sets date command format [default: "%FT%H%M" ie: "2024-03-05T0701"]
    -l <number>   Incremental backup mode: Adds 'level<number>' to the filename.
                  If the number is greater than 0, an incremental backup is performed.
                  Full backups are performed by default (and when a snar file does not exist), 
@@ -180,18 +180,26 @@ shopt -u extglob
 INCREMENTAL_LABEL=""
 INCREMENTAL_FLAG=""
 if [ ${INCREMENTAL_LEVEL} -ge 0 ]; then
-  SNAR_FILE=$HOME/.cache/tar/$KEBAB_BACKUP_FOLDER.snar
+  TAR_CACHE=$HOME/.cache/tar
+  SNAR_FILE=$TAR_CACHE/$KEBAB_BACKUP_FOLDER.snar
   INCREMENTAL_LABEL="-level${INCREMENTAL_LEVEL}"
   INCREMENTAL_FLAG="--listed-incremental=${SNAR_FILE}"
 
-  TAR_CACHE=$HOME/.cache/tar
-  if [ ! -d $ ]; then 
+  echo -e "$(date +"%Y/%m/%d %T") ${C3}Incremental level set to $INCREMENTAL_LEVEL"${C0}
+
+  if [ ! -d $TAR_CACHE ]; then 
     echo -e "$(date +"%Y/%m/%d %T") ${C3}Creating ${C4}$TAR_CACHE ${C3} directory"${C0}
     mkdir -p $TAR_CACHE
   fi
 
+  if [ -f $SNAR_FILE ]; 
+    then echo -e "$(date +"%Y/%m/%d %T") ${C3}snar file ${C4}$SNAR_FILE ${C3} found"${C0}
+  else 
+    echo -e "$(date +"%Y/%m/%d %T") ${C3}snar file ${C4}$SNAR_FILE ${C3} not found.  It will be created and a full backup will be performed."${C0}
+  fi
+
   if [ ${INCREMENTAL_LEVEL} -eq 0 ] && [ -f $SNAR_FILE ]; then
-    echo -e "$(date +"%Y/%m/%d %T") ${C3}Incremental Level set to 0 and snar file ${C4}${SNAR_FILE} ${C3} exists.  Deleting..."${C0}
+    echo -e "$(date +"%Y/%m/%d %T") ${C3}Incremental Level set to 0 and snar file exists.  Deleting..."${C0}
     rm $SNAR_FILE
   fi
 fi

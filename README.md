@@ -27,7 +27,7 @@ or using command-line arguments (will override configuration that's set on on th
 
  Options:
    -n <name>     Sets the tar.gz file name [default: "backup"]
-   -d <format>   Sets date command format [default: "%Y/%m/%d %T" ie: "2024-03-05 07:01:53"]
+   -d <format>   Sets date command format [default: "%FT%H%M" ie: "2024-03-05T0701"]
    -l <number>   Incremental backup mode: Adds 'level<number>' to the filename.
                  If the number is greater than 0, an incremental backup is performed.
                  Full backups are performed by default (and when a snar file does not exist), 
