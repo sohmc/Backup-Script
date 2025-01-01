@@ -193,9 +193,9 @@ if [ ${INCREMENTAL_LEVEL} -ge 0 ]; then
   fi
 
   if [ -f $SNAR_FILE ]; 
-    then echo -e "$(date +"%Y/%m/%d %T") ${C3}snar file ${C4}$SNAR_FILE ${C3} found"${C0}
+    then echo -e "$(date +"%Y/%m/%d %T") ${C3}snar file ${C4}$SNAR_FILE ${C3}found"${C0}
   else 
-    echo -e "$(date +"%Y/%m/%d %T") ${C3}snar file ${C4}$SNAR_FILE ${C3} not found.  It will be created and a full backup will be performed."${C0}
+    echo -e "$(date +"%Y/%m/%d %T") ${C3}snar file ${C4}$SNAR_FILE ${C3}not found.  It will be created and a full backup will be performed."${C0}
   fi
 
   if [ ${INCREMENTAL_LEVEL} -eq 0 ] && [ -f $SNAR_FILE ]; then
