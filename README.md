@@ -4,8 +4,8 @@
 
 A Bash script to generate a tar.gz backup of a folder, with an option to automatically upload the backup file to a cloud service using [rclone](https://github.com/rclone/rclone).  
 List of cloud/storage providers currently supported by rclone can be found [here](https://github.com/rclone/rclone#storage-providers).
-<br>  
-Latest version: 1.3.0 ([changelog](https://github.com/MichaelYochpaz/Backup-Script/blob/master/changelog.md))
+
+Latest version: 1.3.0 ([changelog](changelog.md))
 
 ## Features
 * Generate a tar.gz backup file of a folder.
@@ -59,4 +59,4 @@ or using command-line arguments (will override configuration that's set on on th
 **A:** Go to your Pushbullet account's [settings page](https://www.pushbullet.com/#settings/account), and click the "Create Access Token" button.
 
 **Q:** I found a bug, or have an idea for a feature. How can I help?  
-**A:** Feel free to open an [issue](https://github.com/MichaelYochpaz/Backup-Script/issues) and post your issue / suggestion.
+**A:** Feel free to open an [issue](/issues) and post your issue / suggestion.
