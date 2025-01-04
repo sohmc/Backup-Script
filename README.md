@@ -4,8 +4,8 @@
 
 A Bash script to generate a tar.gz backup of a folder, with an option to automatically upload the backup file to a cloud service using [rclone](https://github.com/rclone/rclone).  
 List of cloud/storage providers currently supported by rclone can be found [here](https://github.com/rclone/rclone#storage-providers).
-<br>  
-Latest version: 1.2.0 ([changelog](https://github.com/MichaelYochpaz/Backup-Script/blob/master/changelog.md))
+
+Latest version: 1.3.0 ([changelog](changelog.md))
 
 ## Features
 * Generate a tar.gz backup file of a folder.
@@ -23,10 +23,16 @@ Latest version: 1.2.0 ([changelog](https://github.com/MichaelYochpaz/Backup-Scri
 Configuration can be set on the script file under the "Configuration" section,  
 or using command-line arguments (will override configuration that's set on on the script).
 ```
- Usage: backup [-n <name>] [-s <path>] [-e <pattern>]... [-u <path>] [-r] [-v] <path-to-backup>
+ Usage: backup [-n <name>] [-d <format>] [-l <number>] [-s <path>] [-e <pattern>]... [-u <path>] [-p <API key>] [-r] [-y] [-v] <path-to-backup>
 
  Options:
    -n <name>     Sets the tar.gz file name [default: "backup"]
+   -d <format>   Sets date command format [default: "%FT%H%M" ie: "2024-03-05T0701"]
+   -l <number>   Incremental backup mode: Adds 'level<number>' to the filename.
+                 If the number is greater than 0, an incremental backup is performed.
+                 Full backups are performed by default (and when a snar file does not exist), 
+                 but indicating a level will create a snar file that will store data 
+                 necessary to perform future backups.
    -s <path>     Path to which the generated backup file will be saved to [default: current working directory]
    -e <pattern>  Exclude a pattern (specific files / folders) from being backed up
    -u <path>     rclone path to which the backup file will be uploaded to (not providing one will skip the upload process)
@@ -42,6 +48,7 @@ or using command-line arguments (will override configuration that's set on on th
  backup "/home/user/important_stuff"
  backup -u "GDrive:/Backups" -r -y -p "XXXXXXXXXXXXXXXX" "/home/user/important_stuff/" 
  backup -n "important-stuff-backup" -s "/home/user/backups" -e "*.pdf" -e "important_stuff/dont_backup_this_folder" "/home/user/important_stuff/"
+ backup -l 0 -s /mnt/backup /home/michael
 ```
 
 ## FAQ
@@ -52,4 +59,4 @@ or using command-line arguments (will override configuration that's set on on th
 **A:** Go to your Pushbullet account's [settings page](https://www.pushbullet.com/#settings/account), and click the "Create Access Token" button.
 
 **Q:** I found a bug, or have an idea for a feature. How can I help?  
-**A:** Feel free to open an [issue](https://github.com/MichaelYochpaz/Backup-Script/issues) and post your issue / suggestion.
+**A:** Feel free to open an issue and post your issue / suggestion.
