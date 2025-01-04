@@ -59,4 +59,4 @@ or using command-line arguments (will override configuration that's set on on th
 **A:** Go to your Pushbullet account's [settings page](https://www.pushbullet.com/#settings/account), and click the "Create Access Token" button.
 
 **Q:** I found a bug, or have an idea for a feature. How can I help?  
-**A:** Feel free to open an [issue](/issues) and post your issue / suggestion.
+**A:** Feel free to open an issue and post your issue / suggestion.
