@@ -10,7 +10,7 @@
 ##  The script generates a tar.gz backup file of a folder, and according to user's given arguments,
 ##  can upload it to a cloud service using rclone and remove the local copy.
 ##
-## ------------ Requirments -----------
+## ------------ Requirements -----------
 ##  - In order to use the upload feature, rclone must be installed and have at least one cloud service setup in config.
 ## ------------------------------------
 ##
@@ -46,17 +46,17 @@ BACKUP_FOLDER="" # Folder to backup (full path).
 EXCLUDES=() # Exclusion patterns array. Usage example: ("*.mkv" "*.pdf" "important_stuff/dont_backup_this_folder")
 SAVE_FOLDER="$PWD" # Folder to save backup file to (full path)
 RCLONE_FOLDER="" # rclone folder path to upload backup file to. Leave empty to skip the upload process.
-PUSHBULLET_API_KEY="" # Pusbullet API key for notifications.
+PUSHBULLET_API_KEY="" # Pushbullet API key for notifications.
 REMOVE_LOCAL=false # Boolean - Remove local backup file after upload.
 SKIP_WARNINGS=false # Boolean - Skip warnings.
 VERBOSE=false # Boolean - Use verbose mode when running tar and rclone.
-PUSHBULLET_TITLE="Backup Script" # Pusbullet - Notification title.
+PUSHBULLET_TITLE="Backup Script" # Pushbullet - Notification title.
 DATE_FORMAT='%Y%m%d-%H%M%S'
 INCREMENTAL_LEVEL=-1
 PUSHBULLET_MESSAGE_START="Backup script " # Pushbullet - Notification messages will start with this string, followed by one of the followings:
-PUSHBULLET_MESSAGE_FINISHED_SUCCESS="finished successfully." # Pusbullet - Message will be shown if the script ran successfully.
-PUSHBULLET_MESSAGE_FINISHED_ERRORS="finished with errors." # Pusbullet - Message will be shown if the script finished with errors.
-PUSHBULLET_MESSAGE_FAIL="failed." # Pusbullet - Message will be shown if the script has failed.
+PUSHBULLET_MESSAGE_FINISHED_SUCCESS="finished successfully." # Pushbullet - Message will be shown if the script ran successfully.
+PUSHBULLET_MESSAGE_FINISHED_ERRORS="finished with errors." # Pushbullet - Message will be shown if the script finished with errors.
+PUSHBULLET_MESSAGE_FAIL="failed." # Pushbullet - Message will be shown if the script has failed.
 ## ------------------------------------
 
 usage() { echo "Usage: $(basename $0) [-n <name>] [-d <format>] [-l <number>] [-s <path>] [-e <pattern>]... [-u <path>] [-p <API key>] [-r] [-y] [-v] <path-to-backup>
@@ -162,7 +162,7 @@ if [ "${SAVE_FOLDER: -1}" = "/" ]; then SAVE_FOLDER=${SAVE_FOLDER%?}; fi
  # if REMOVE_LOCAL is set to true, but rclone upload is not used, show a warning.
 if [ "$REMOVE_LOCAL" = true ] && [ -z "$RCLONE_FOLDER" ] && [] "$SKIP_WARNINGS" = false ]; then
   read -p "WARNING: '-r' argument to remove local backup file was used,
-  but no rclone path to upload backup flie to beforehand is set.
+  but no rclone path to upload backup file to beforehand is set.
   This will result in generating a backup file and deleting it after without it being uploaded anywhere.
   Would you like to continue (Y/n) ?" -n 1 -r
   echo
@@ -206,7 +206,7 @@ fi
 
 # ----- tar -----
 echo -e "$(date +"%Y/%m/%d %T") ${C3}Generating tar.gz file"${C0}
-FILENAME="${BACKUP_NAME}-$(date +${DATE_FORMAT})${INCREMENTAL_LABEL}.tar.gz"
+FILENAME="${BACKUP_NAME}-${INCREMENTAL_LABEL}.tar.gz"
 echo -e "$(date +"%Y/%m/%d %T") ${C3}tar FILENAME: ${C4}${FILENAME}"${C0}
 # generate a temporary file to store EXCLUDES in
 EXCLUDES_FILE=$(mktemp /tmp/backup.XXXXXX.txt)
@@ -218,9 +218,9 @@ if [ -f $DEFAULT_EXCLUDE ]; then
   echo -e "$(date +"%Y/%m/%d %T") ${C3} Default exclude file found.  Adding to excludes..."${C0}
   cat $DEFAULT_EXCLUDE >> "$EXCLUDES_FILE";
 fi
-# Include a {kebabbed}.exclude if it exists
+# Include a {kebabed}.exclude if it exists
 KEBAB_BACKUP_FOLDER_EXCLUDE=$HOME/.config/tar/$KEBAB_BACKUP_FOLDER.exclude
-if [ -f $KEBAB_BACKUP_FOLDER_EXCLUDE ]; then 
+if [ -f $KEBAB_BACKUP_FOLDER_EXCLUDE ]; then
   echo -e "$(date +"%Y/%m/%d %T") ${C3} Exclude file for ${KEBAB_BACKUP_FOLDER} found.  Adding to excludes..."${C0}
   cat $KEBAB_BACKUP_FOLDER_EXCLUDE >> "$EXCLUDES_FILE"; 
 fi
@@ -235,10 +235,10 @@ tar -cz $VERBOSE_FLAG -f "$SAVE_FOLDER/$FILENAME" $INCREMENTAL_FLAG -C "$BACKUP_
 # remove temporary file
 rm $EXCLUDES_FILE
 
-# tar commmand finished successfully (exit code = 0)
+# tar command finished successfully (exit code = 0)
 if [ "$?" = 0 ]; then
   echo -e "$(date +"%Y/%m/%d %T") ${C1}Backup file generated and saved successfully to ${C4}$SAVE_FOLDER/$FILENAME ($(du -h "$SAVE_FOLDER/$FILENAME" | cut -f1))${C0}"
-# tar commmand didn't run successfully (exit code != 0)
+# tar command didn't run successfully (exit code != 0)
 else 
   echo -e "$(date +"%Y/%m/%d %T") ${C2}Backup file generation failed${C0}"
 # if a file was generated during the (failed) tar process, remove it
@@ -251,8 +251,10 @@ fi
 if [ -n "$RCLONE_FOLDER" ]; then
   echo -e "$(date +"%Y/%m/%d %T") ${C3}Uploading backup file to ${C4}$RCLONE_FOLDER${C0}"
   # run rclone with or without '-v', according to VERBOSE value
-  rclone copy "$SAVE_FOLDER/$FILENAME" $VERBOSE_FLAG "$RCLONE_FOLDER"
-  # rclone commmand finished successfully (exit code = 0)
+  rclone copy $VERBOSE_FLAG \
+    $RCLONE_OPTIONS \
+    "$SAVE_FOLDER/$FILENAME" "$RCLONE_FOLDER"
+  # rclone command finished successfully (exit code = 0)
   if [ "$?" = 0 ]; then
     echo -e "$(date +"%Y/%m/%d %T") ${C1}Backup file uploaded successfully${C0}"
   # rclone command didn't run successfully (exit code != 0)
@@ -261,7 +263,7 @@ if [ -n "$RCLONE_FOLDER" ]; then
     echo -e "$(date +"%Y/%m/%d %T") ${C2}Upload failed${C0}"
 
     if [ "$REMOVE_LOCAL" = true ] && [ "$SKIP_WARNINGS" = false ]; then
-      read -p "WARNING: Would you like to continute and remove local copy of the backup file even though upload wasn't successful (Y/n) ? " -n 1 -r
+      read -p "WARNING: Would you like to continue and remove local copy of the backup file even though upload wasn't successful (Y/n) ? " -n 1 -r
       echo
       if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         echo -e "$(date +"%Y/%m/%d %T") ${C2}Script finished with errors${C0}"
